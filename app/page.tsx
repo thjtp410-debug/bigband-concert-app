@@ -56,6 +56,8 @@ export default async function HomePage() {
         <div style={{ display: "grid", gap: "18px" }}>
           {concerts.map((concert: any) => {
             const status = concert.setlistStatus?.concertStatus ?? "before";
+            const showReservationButton =
+              status === "before" && !!concert.reservationUrl;
 
             const statusLabelMap: Record<string, string> = {
               before: "開演前",
@@ -65,116 +67,157 @@ export default async function HomePage() {
             };
 
             return (
-              <Link
+              <div
                 key={concert.id}
-                href={`/concerts/${concert.slug}/setlist`}
                 style={{
-                  display: "block",
                   borderRadius: "24px",
                   overflow: "hidden",
                   background: "rgba(255,255,255,0.08)",
                   border: "1px solid rgba(255,255,255,0.14)",
                   boxShadow: "0 16px 36px rgba(0,0,0,0.16)",
-                  textDecoration: "none",
-                  color: "white",
                 }}
               >
-                {concert.flyerImage?.url ? (
-                  <img
-                    src={concert.flyerImage.url}
-                    alt={concert.title}
-                    style={{
-                      width: "100%",
-                      height: "220px",
-                      objectFit: "cover",
-                      display: "block",
-                    }}
-                  />
-                ) : (
-                  <div
-                    style={{
-                      width: "100%",
-                      height: "220px",
-                      background:
-                        "linear-gradient(135deg, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0.18) 100%)",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      fontSize: "18px",
-                      opacity: 0.7,
-                    }}
-                  >
-                    No Image
-                  </div>
-                )}
-
-                <div style={{ padding: "18px 18px 20px" }}>
-                  <div
-                    style={{
-                      display: "flex",
-                      justifyContent: "space-between",
-                      alignItems: "center",
-                      gap: "12px",
-                      marginBottom: "12px",
-                      flexWrap: "wrap",
-                    }}
-                  >
+                <Link
+                  href={`/concerts/${concert.slug}/setlist`}
+                  style={{
+                    display: "block",
+                    textDecoration: "none",
+                    color: "white",
+                  }}
+                >
+                  {concert.flyerImage?.url ? (
+                    <img
+                      src={concert.flyerImage.url}
+                      alt={concert.title}
+                      style={{
+                        width: "100%",
+                        height: "220px",
+                        objectFit: "cover",
+                        display: "block",
+                      }}
+                    />
+                  ) : (
                     <div
                       style={{
-                        padding: "7px 12px",
-                        borderRadius: "999px",
-                        background: "rgba(255,255,255,0.18)",
-                        fontSize: "13px",
+                        width: "100%",
+                        height: "220px",
+                        background:
+                          "linear-gradient(135deg, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0.18) 100%)",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        fontSize: "18px",
+                        opacity: 0.7,
+                      }}
+                    >
+                      No Image
+                    </div>
+                  )}
+
+                  <div style={{ padding: "18px 18px 14px" }}>
+                    <div
+                      style={{
+                        display: "flex",
+                        justifyContent: "space-between",
+                        alignItems: "center",
+                        gap: "12px",
+                        marginBottom: "12px",
+                        flexWrap: "wrap",
+                      }}
+                    >
+                      <div
+                        style={{
+                          padding: "7px 12px",
+                          borderRadius: "999px",
+                          background: "rgba(255,255,255,0.18)",
+                          fontSize: "13px",
+                          fontWeight: 800,
+                        }}
+                      >
+                        {statusLabelMap[status] ?? "開演前"}
+                      </div>
+
+                      <div
+                        style={{
+                          fontSize: "14px",
+                          opacity: 0.8,
+                          fontWeight: 700,
+                        }}
+                      >
+                        {concert.date}
+                      </div>
+                    </div>
+
+                    <div
+                      style={{
+                        fontSize: "30px",
                         fontWeight: 800,
+                        lineHeight: 1.15,
+                        marginBottom: "10px",
                       }}
                     >
-                      {statusLabelMap[status] ?? "開演前"}
+                      {concert.title}
                     </div>
 
                     <div
                       style={{
-                        fontSize: "14px",
-                        opacity: 0.8,
+                        fontSize: "18px",
                         fontWeight: 700,
+                        lineHeight: 1.35,
+                        marginBottom: "4px",
                       }}
                     >
-                      {concert.date}
+                      {concert.bandName}
+                    </div>
+
+                    <div
+                      style={{
+                        fontSize: "15px",
+                        opacity: 0.78,
+                        lineHeight: 1.4,
+                      }}
+                    >
+                      {concert.venue}
                     </div>
                   </div>
+                </Link>
 
-                  <div
-                    style={{
-                      fontSize: "30px",
-                      fontWeight: 800,
-                      lineHeight: 1.15,
-                      marginBottom: "10px",
-                    }}
-                  >
-                    {concert.title}
-                  </div>
-
-                  <div
-                    style={{
-                      fontSize: "18px",
-                      fontWeight: 700,
-                      lineHeight: 1.35,
-                      marginBottom: "4px",
-                    }}
-                  >
-                    {concert.bandName}
-                  </div>
-
-                  <div
-                    style={{
-                      fontSize: "15px",
-                      opacity: 0.78,
-                      lineHeight: 1.4,
-                    }}
-                  >
-                    {concert.venue}
-                  </div>
+                <div
+                  style={{
+                    padding: "0 18px 18px",
+                  }}
+                >
+                  {showReservationButton ? (
+                    <a
+                      href={concert.reservationUrl}
+                      target="_blank"
+                      rel="noreferrer"
+                      style={{
+                        display: "inline-block",
+                        width: "100%",
+                        textAlign: "center",
+                        padding: "14px 16px",
+                        borderRadius: "16px",
+                        background: "rgba(255,255,255,0.92)",
+                        color: "#081a5a",
+                        textDecoration: "none",
+                        fontWeight: 800,
+                        fontSize: "16px",
+                        boxSizing: "border-box",
+                      }}
+                    >
+                      予約する
+                    </a>
+                  ) : (
+                    <div
+                      style={{
+                        width: "100%",
+                        height: "48px",
+                      }}
+                    />
+                  )}
                 </div>
-              </Link>
+              </div>
             );
           })}
         </div>

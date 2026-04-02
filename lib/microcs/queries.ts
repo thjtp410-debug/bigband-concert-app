@@ -32,6 +32,7 @@ export async function fetchConcertList() {
     date: item.date ?? "2026.04.12",
     description: item.description ?? "",
     flyerImage: item.flyerImage ?? null,
+    reservationUrl: item.reservationUrl ?? "",
     setlistStatus: {
       concertStatus: item.concertStatus ?? "before",
       currentSongOrder: item.currentSongOrder ?? 0,
@@ -71,6 +72,7 @@ export async function fetchConcertDetail(slug: string) {
     date: item.date ?? "2026.04.12",
     description: item.description ?? "",
     flyerImage: item.flyerImage ?? null,
+    reservationUrl: item.reservationUrl ?? "",
     setlistStatus: {
       concertStatus: item.concertStatus ?? "before",
       currentSongOrder: item.currentSongOrder ?? 0,
