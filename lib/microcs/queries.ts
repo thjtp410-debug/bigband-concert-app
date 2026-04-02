@@ -8,7 +8,7 @@ export async function fetchConcertList() {
     },
   });
 
-  return data.contents.map((item: any) => ({
+  const concerts = data.contents.map((item: any) => ({
     id: item.id,
     slug: item.slug,
     title: item.title,
@@ -22,6 +22,17 @@ export async function fetchConcertList() {
       currentSongOrder: item.currentSongOrder ?? 0,
     },
   }));
+
+  return concerts.sort((a: any, b: any) => {
+    const da = new Date(b.date ?? 0).getTime();
+    const db = new Date(a.date ?? 0).getTime();
+
+    if (!Number.isNaN(da) && !Number.isNaN(db)) {
+      return da - db;
+    }
+
+    return String(b.date).localeCompare(String(a.date));
+  });
 }
 
 export async function fetchConcertDetail(slug: string) {

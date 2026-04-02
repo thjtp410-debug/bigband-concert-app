@@ -4,108 +4,148 @@ import { fetchConcertList } from "@/lib/microcs/queries";
 export default async function HomePage() {
   const concerts = await fetchConcertList();
 
+  const topImageUrl =
+    concerts.find((concert: any) => concert.flyerImage?.url)?.flyerImage?.url ?? null;
+
   return (
     <main
       style={{
-        minHeight: "100vh",
-        background: "linear-gradient(180deg, #0f172a 0%, #1d4ed8 100%)",
+        minHeight: "100dvh",
+        background: "linear-gradient(180deg, #081a5a 0%, #0d2cff 100%)",
         color: "white",
-        padding: "48px 20px 80px",
+        padding: "20px 14px 120px",
       }}
     >
-      <div style={{ maxWidth: "1100px", margin: "0 auto" }}>
-        <div style={{ marginBottom: "36px" }}>
-          <div
+      <div style={{ maxWidth: "760px", margin: "0 auto" }}>
+        {topImageUrl ? (
+          <section
             style={{
-              fontSize: "13px",
-              letterSpacing: "0.18em",
-              textTransform: "uppercase",
-              opacity: 0.8,
-              marginBottom: "10px",
+              marginBottom: "20px",
+              borderRadius: "28px",
+              overflow: "hidden",
+              border: "1px solid rgba(255,255,255,0.14)",
+              boxShadow: "0 18px 40px rgba(0,0,0,0.18)",
+              background: "rgba(255,255,255,0.08)",
             }}
           >
-            Big Band Concert App
-          </div>
-
-          <h1
-            style={{
-              fontSize: "48px",
-              lineHeight: 1.1,
-              fontWeight: 800,
-              margin: 0,
-            }}
-          >
-            公演ごとの
-            <br />
-            セットリスト体験をまとめる
-          </h1>
-
-          <p
-            style={{
-              marginTop: "18px",
-              maxWidth: "720px",
-              fontSize: "18px",
-              lineHeight: 1.7,
-              opacity: 0.82,
-            }}
-          >
-            複数バンド・複数公演で使い回せる、スマホ最優先のビッグバンド公演向けWebアプリ。
-          </p>
-        </div>
+            <img
+              src={topImageUrl}
+              alt="band photo"
+              style={{
+                width: "100%",
+                display: "block",
+                objectFit: "cover",
+              }}
+            />
+          </section>
+        ) : null}
 
         <div
           style={{
-            display: "grid",
-            gap: "20px",
+            fontSize: "34px",
+            fontWeight: 800,
+            marginBottom: "18px",
+            lineHeight: 1.1,
           }}
         >
-          {concerts.map((concert: any) => (
-            <Link
-              key={concert.id}
-              href={`/concerts/${concert.slug}/setlist`}
-              style={{
-                display: "block",
-                borderRadius: "28px",
-                padding: "28px",
-                background:
-                  "linear-gradient(135deg, rgba(37,99,235,0.95) 0%, rgba(96,165,250,0.9) 100%)",
-                border: "1px solid rgba(255,255,255,0.18)",
-                boxShadow: "0 18px 40px rgba(0,0,0,0.22)",
-                transition: "transform 0.22s ease, box-shadow 0.22s ease",
-              }}
-            >
-              <div
+          公演一覧
+        </div>
+
+        <div style={{ display: "grid", gap: "18px" }}>
+          {concerts.map((concert: any) => {
+            const status = concert.setlistStatus?.concertStatus ?? "before";
+
+            const statusLabelMap: Record<string, string> = {
+              before: "開演前",
+              playing: "開演中",
+              break: "休憩中",
+              ended: "終演",
+            };
+
+            return (
+              <Link
+                key={concert.id}
+                href={`/concerts/${concert.slug}/setlist`}
                 style={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  alignItems: "flex-start",
-                  gap: "20px",
+                  display: "block",
+                  borderRadius: "24px",
+                  overflow: "hidden",
+                  background: "rgba(255,255,255,0.08)",
+                  border: "1px solid rgba(255,255,255,0.14)",
+                  boxShadow: "0 16px 36px rgba(0,0,0,0.16)",
+                  textDecoration: "none",
+                  color: "white",
                 }}
               >
-                <div>
+                {concert.flyerImage?.url ? (
+                  <img
+                    src={concert.flyerImage.url}
+                    alt={concert.title}
+                    style={{
+                      width: "100%",
+                      height: "220px",
+                      objectFit: "cover",
+                      display: "block",
+                    }}
+                  />
+                ) : (
                   <div
                     style={{
-                      display: "inline-block",
-                      padding: "6px 12px",
-                      borderRadius: "999px",
-                      background: "rgba(15,23,42,0.28)",
-                      fontSize: "13px",
-                      fontWeight: 700,
-                      marginBottom: "16px",
+                      width: "100%",
+                      height: "220px",
+                      background:
+                        "linear-gradient(135deg, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0.18) 100%)",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      fontSize: "18px",
+                      opacity: 0.7,
                     }}
                   >
-                    {concert.setlistStatus?.concertStatus === "live"
-                      ? "公演中"
-                      : concert.setlistStatus?.concertStatus === "after"
-                      ? "終演"
-                      : "開演前"}
+                    No Image
+                  </div>
+                )}
+
+                <div style={{ padding: "18px 18px 20px" }}>
+                  <div
+                    style={{
+                      display: "flex",
+                      justifyContent: "space-between",
+                      alignItems: "center",
+                      gap: "12px",
+                      marginBottom: "12px",
+                      flexWrap: "wrap",
+                    }}
+                  >
+                    <div
+                      style={{
+                        padding: "7px 12px",
+                        borderRadius: "999px",
+                        background: "rgba(255,255,255,0.18)",
+                        fontSize: "13px",
+                        fontWeight: 800,
+                      }}
+                    >
+                      {statusLabelMap[status] ?? "開演前"}
+                    </div>
+
+                    <div
+                      style={{
+                        fontSize: "14px",
+                        opacity: 0.8,
+                        fontWeight: 700,
+                      }}
+                    >
+                      {concert.date}
+                    </div>
                   </div>
 
                   <div
                     style={{
-                      fontSize: "34px",
+                      fontSize: "30px",
                       fontWeight: 800,
-                      lineHeight: 1.2,
+                      lineHeight: 1.15,
+                      marginBottom: "10px",
                     }}
                   >
                     {concert.title}
@@ -113,10 +153,10 @@ export default async function HomePage() {
 
                   <div
                     style={{
-                      marginTop: "10px",
-                      fontSize: "20px",
-                      fontWeight: 600,
-                      opacity: 0.95,
+                      fontSize: "18px",
+                      fontWeight: 700,
+                      lineHeight: 1.35,
+                      marginBottom: "4px",
                     }}
                   >
                     {concert.bandName}
@@ -124,38 +164,17 @@ export default async function HomePage() {
 
                   <div
                     style={{
-                      marginTop: "6px",
-                      fontSize: "18px",
-                      opacity: 0.82,
+                      fontSize: "15px",
+                      opacity: 0.78,
+                      lineHeight: 1.4,
                     }}
                   >
                     {concert.venue}
                   </div>
-
-                  <div
-                    style={{
-                      marginTop: "18px",
-                      fontSize: "18px",
-                      fontWeight: 700,
-                    }}
-                  >
-                    セットリストを見る →
-                  </div>
                 </div>
-
-                <div
-                  style={{
-                    fontSize: "22px",
-                    fontWeight: 700,
-                    whiteSpace: "nowrap",
-                    opacity: 0.95,
-                  }}
-                >
-                  {concert.date}
-                </div>
-              </div>
-            </Link>
-          ))}
+              </Link>
+            );
+          })}
         </div>
       </div>
     </main>
