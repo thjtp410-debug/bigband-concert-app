@@ -88,7 +88,7 @@ export default async function HomePage() {
                   {concert.flyerImage?.url ? (
                     <img
                       src={concert.flyerImage.url}
-                      alt={concert.title}
+                      alt={concert.concertName}
                       style={{
                         width: "100%",
                         height: "220px",
@@ -156,7 +156,7 @@ export default async function HomePage() {
                         marginBottom: "10px",
                       }}
                     >
-                      {concert.title}
+                      {concert.concertName}
                     </div>
 
                     <div

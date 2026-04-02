@@ -89,7 +89,7 @@ export default async function Page({
             lineHeight: 1.4,
           }}
         >
-          {concert?.bandName ?? "Eagle Jazztech Orchestra"} / {concert?.venue ?? "Shibuya Public Hall"}
+          {concert?.concertName ?? "公演名未設定"} / {concert?.venue ?? "Shibuya Public Hall"}
         </div>
 
         <div
