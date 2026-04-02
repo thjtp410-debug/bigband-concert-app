@@ -1,5 +1,15 @@
 import { client } from "@/lib/microcms/client";
 
+export async function fetchSiteSettings() {
+  const data = await client.get({
+    endpoint: "site-settings",
+  });
+
+  return {
+    topImage: data.topImage ?? null,
+  };
+}
+
 export async function fetchConcertList() {
   const data = await client.get({
     endpoint: "concerts",

@@ -1,11 +1,11 @@
 import Link from "next/link";
-import { fetchConcertList } from "@/lib/microcs/queries";
+import { fetchConcertList, fetchSiteSettings } from "@/lib/microcs/queries";
 
 export default async function HomePage() {
   const concerts = await fetchConcertList();
+  const siteSettings = await fetchSiteSettings();
 
-  const topImageUrl =
-    concerts.find((concert: any) => concert.flyerImage?.url)?.flyerImage?.url ?? null;
+  const topImageUrl = siteSettings?.topImage?.url ?? null;
 
   return (
     <main
