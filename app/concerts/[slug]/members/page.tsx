@@ -34,21 +34,22 @@ export default async function Page({
   return (
     <main
       style={{
-        minHeight: "100vh",
+        minHeight: "100dvh",
         background: "linear-gradient(180deg, #081a5a 0%, #0d2cff 100%)",
         color: "white",
-        padding: "36px 20px 120px",
+        padding: "20px 14px 120px",
       }}
     >
-      <div style={{ maxWidth: "1120px", margin: "0 auto" }}>
+      <div style={{ maxWidth: "560px", margin: "0 auto" }}>
         <Link
           href="/"
           style={{
             display: "inline-block",
-            marginBottom: "20px",
-            fontSize: "15px",
-            opacity: 0.85,
+            marginBottom: "16px",
+            fontSize: "14px",
+            opacity: 0.9,
             textDecoration: "none",
+            color: "white",
           }}
         >
           ← 公演一覧へ
@@ -56,22 +57,24 @@ export default async function Page({
 
         <div
           style={{
-            marginBottom: "20px",
-            fontSize: "24px",
+            marginBottom: "14px",
+            fontSize: "20px",
             fontWeight: 700,
-            lineHeight: 1.5,
+            lineHeight: 1.4,
           }}
         >
-          {concert?.bandName ?? "Eagle Jazztech Orchestra"} / {concert?.venue ?? "Shibuya Public Hall"}
+          {concert?.concertName ?? "公演名未設定"} / {concert?.venue ?? "Shibuya Public Hall"}
         </div>
 
         <div
           style={{
             display: "flex",
-            gap: "10px",
+            gap: "8px",
             justifyContent: "flex-start",
-            flexWrap: "wrap",
-            marginBottom: "26px",
+            flexWrap: "nowrap",
+            marginBottom: "18px",
+            overflowX: "auto",
+            paddingBottom: "2px",
           }}
         >
           <Link href={`/concerts/${slug}/setlist`} style={chipBtn}>
@@ -90,21 +93,22 @@ export default async function Page({
 
         <h1
           style={{
-            fontSize: "44px",
+            fontSize: "32px",
             fontWeight: 800,
-            marginBottom: "28px",
+            marginBottom: "18px",
+            lineHeight: 1.1,
           }}
         >
           Members
         </h1>
 
         {(bandMistress || bandMaster) && (
-          <section style={{ marginBottom: "42px" }}>
+          <section style={{ marginBottom: "28px" }}>
             <div
               style={{
-                fontSize: "24px",
+                fontSize: "22px",
                 fontWeight: 800,
-                marginBottom: "16px",
+                marginBottom: "14px",
                 opacity: 0.95,
               }}
             >
@@ -119,12 +123,12 @@ export default async function Page({
         )}
 
         {orderedGroups.map(([instrument, list]: any) => (
-          <section key={instrument} style={{ marginBottom: "42px" }}>
+          <section key={instrument} style={{ marginBottom: "28px" }}>
             <div
               style={{
-                fontSize: "24px",
+                fontSize: "22px",
                 fontWeight: 800,
-                marginBottom: "16px",
+                marginBottom: "14px",
                 opacity: 0.95,
               }}
             >
@@ -147,8 +151,8 @@ function MemberCard({ member }: { member: any }) {
   return (
     <div
       style={{
-        width: "240px",
-        borderRadius: "22px",
+        width: "100%",
+        borderRadius: "18px",
         overflow: "hidden",
         background: "rgba(255,255,255,0.08)",
         border: "1px solid rgba(255,255,255,0.14)",
@@ -158,8 +162,8 @@ function MemberCard({ member }: { member: any }) {
     >
       <div
         style={{
-          width: "240px",
-          height: "240px",
+          width: "100%",
+          aspectRatio: "1 / 1",
           background: "rgba(255,255,255,0.06)",
           display: "flex",
           alignItems: "center",
@@ -172,8 +176,8 @@ function MemberCard({ member }: { member: any }) {
             src={member.image.url}
             alt={member.name}
             style={{
-              width: "240px",
-              height: "240px",
+              width: "100%",
+              height: "100%",
               objectFit: "cover",
               display: "block",
             }}
@@ -181,7 +185,7 @@ function MemberCard({ member }: { member: any }) {
         ) : (
           <span
             style={{
-              fontSize: "18px",
+              fontSize: "14px",
               opacity: 0.65,
             }}
           >
@@ -192,16 +196,17 @@ function MemberCard({ member }: { member: any }) {
 
       <div
         style={{
-          padding: "16px 16px 18px",
-          minHeight: "92px",
+          padding: "12px 12px 14px",
+          minHeight: "86px",
         }}
       >
         <div
           style={{
-            fontSize: "18px",
+            fontSize: "16px",
             fontWeight: 800,
-            lineHeight: 1.3,
-            marginBottom: "6px",
+            lineHeight: 1.25,
+            marginBottom: "4px",
+            wordBreak: "break-word",
           }}
         >
           {member.name}
@@ -209,8 +214,9 @@ function MemberCard({ member }: { member: any }) {
 
         <div
           style={{
-            fontSize: "15px",
+            fontSize: "13px",
             opacity: 0.78,
+            lineHeight: 1.3,
           }}
         >
           {member.instrument}
@@ -219,10 +225,11 @@ function MemberCard({ member }: { member: any }) {
         {member.role && (
           <div
             style={{
-              marginTop: "6px",
-              fontSize: "14px",
+              marginTop: "5px",
+              fontSize: "12px",
               fontWeight: 700,
               color: "#a5d8ff",
+              lineHeight: 1.3,
             }}
           >
             {member.role}
@@ -235,13 +242,12 @@ function MemberCard({ member }: { member: any }) {
 
 const gridStyle = {
   display: "grid",
-  gridTemplateColumns: "repeat(auto-fill, 240px)",
-  gap: "20px",
-  justifyContent: "start",
+  gridTemplateColumns: "repeat(2, minmax(0, 1fr))",
+  gap: "12px",
 };
 
 const chipBtn = {
-  padding: "10px 16px",
+  padding: "9px 14px",
   borderRadius: "999px",
   background: "rgba(255,255,255,0.14)",
   border: "1px solid rgba(255,255,255,0.24)",
@@ -249,10 +255,13 @@ const chipBtn = {
   color: "white",
   fontWeight: 700,
   display: "inline-block",
+  fontSize: "14px",
+  whiteSpace: "nowrap" as const,
+  flex: "0 0 auto",
 };
 
 const activeChipBtn = {
-  padding: "10px 16px",
+  padding: "9px 14px",
   borderRadius: "999px",
   background: "rgba(255,255,255,0.30)",
   border: "1px solid rgba(255,255,255,0.34)",
@@ -260,5 +269,8 @@ const activeChipBtn = {
   color: "white",
   fontWeight: 700,
   display: "inline-block",
+  fontSize: "14px",
   boxShadow: "0 8px 20px rgba(0,0,0,0.18)",
+  whiteSpace: "nowrap" as const,
+  flex: "0 0 auto",
 };
