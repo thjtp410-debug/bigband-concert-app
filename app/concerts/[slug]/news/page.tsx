@@ -45,7 +45,6 @@ export default async function Page({
           {concert?.concertName ?? "公演名未設定"} / {concert?.venue}
         </div>
 
-        {/* タブ（統一） */}
         <div
           style={{
             display: "flex",
@@ -79,9 +78,8 @@ export default async function Page({
         </h1>
 
         <div style={{ display: "grid", gap: "14px" }}>
-          {newsList.map((news: any) => (
+          {newsList.length === 0 ? (
             <div
-              key={news.id}
               style={{
                 borderRadius: "18px",
                 padding: "16px",
@@ -90,42 +88,71 @@ export default async function Page({
                 boxShadow: "0 16px 36px rgba(0,0,0,0.18)",
               }}
             >
-              <div
-                style={{
-                  fontSize: "20px",
-                  fontWeight: 800,
-                  marginBottom: "8px",
-                }}
-              >
-                {news.title}
-              </div>
-
-              <div
-                style={{
-                  fontSize: "14px",
-                  opacity: 0.8,
-                  marginBottom: "10px",
-                }}
-              >
-                {new Date(news.publishedAt).toLocaleDateString()}
-              </div>
-
-              <div
-                style={{
-                  fontSize: "15px",
-                  lineHeight: 1.6,
-                  opacity: 0.9,
-                  whiteSpace: "pre-wrap",
-                }}
-              >
-                {news.content}
-              </div>
+              お知らせはまだありません。
             </div>
-          ))}
+          ) : (
+            newsList.map((news: any) => (
+              <div
+                key={news.id}
+                style={{
+                  borderRadius: "18px",
+                  padding: "16px",
+                  background: "rgba(255,255,255,0.08)",
+                  border: "1px solid rgba(255,255,255,0.14)",
+                  boxShadow: "0 16px 36px rgba(0,0,0,0.18)",
+                }}
+              >
+                <div
+                  style={{
+                    fontSize: "20px",
+                    fontWeight: 800,
+                    marginBottom: "8px",
+                    lineHeight: 1.3,
+                  }}
+                >
+                  {news.title}
+                </div>
+
+                <div
+                  style={{
+                    fontSize: "14px",
+                    opacity: 0.8,
+                    marginBottom: "10px",
+                  }}
+                >
+                  {formatDate(news.publishedAt ?? news.createdAt)}
+                </div>
+
+                <div
+                  style={{
+                    fontSize: "15px",
+                    lineHeight: 1.7,
+                    opacity: 0.92,
+                    whiteSpace: "pre-wrap",
+                    wordBreak: "break-word",
+                  }}
+                >
+                  {typeof news.body === "string" ? news.body : ""}
+                </div>
+              </div>
+            ))
+          )}
         </div>
       </div>
     </main>
   );
+}
+
+function formatDate(value?: string) {
+  if (!value) return "";
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return value;
+
+  const y = date.getFullYear();
+  const m = String(date.getMonth() + 1).padStart(2, "0");
+  const d = String(date.getDate()).padStart(2, "0");
+
+  return `${y}.${m}.${d}`;
 }
 
 const chipBtn = {
@@ -137,7 +164,7 @@ const chipBtn = {
   color: "white",
   fontWeight: 700,
   fontSize: "14px",
-  whiteSpace: "nowrap",
+  whiteSpace: "nowrap" as const,
 };
 
 const activeChipBtn = {
@@ -149,4 +176,5 @@ const activeChipBtn = {
   color: "white",
   fontWeight: 700,
   fontSize: "14px",
+  whiteSpace: "nowrap" as const,
 };
