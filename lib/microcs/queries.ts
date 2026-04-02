@@ -3,10 +3,15 @@ import { client } from "@/lib/microcms/client";
 export async function fetchSiteSettings() {
   const data = await client.get({
     endpoint: "site-settings",
+    queries: {
+      limit: 1,
+    },
   });
 
+  const item = data.contents?.[0];
+
   return {
-    topImage: data.topImage ?? null,
+    topImage: item?.image ?? null,
   };
 }
 
