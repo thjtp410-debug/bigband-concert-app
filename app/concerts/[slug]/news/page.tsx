@@ -7,51 +7,51 @@ export default async function Page({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
+
   const concert = await fetchConcertDetail(slug);
   const newsList = await fetchConcertNews(slug);
 
   return (
     <main
       style={{
-        minHeight: "100vh",
+        minHeight: "100dvh",
         background: "linear-gradient(180deg, #081a5a 0%, #0d2cff 100%)",
         color: "white",
-        padding: "36px 20px 120px",
+        padding: "20px 14px 120px",
       }}
     >
-      <div style={{ maxWidth: "760px", margin: "0 auto" }}>
+      <div style={{ maxWidth: "560px", margin: "0 auto" }}>
         <Link
-          href={`/concerts/${slug}/setlist`}
+          href="/"
           style={{
             display: "inline-block",
-            marginBottom: "20px",
-            fontSize: "15px",
-            opacity: 0.85,
+            marginBottom: "16px",
+            fontSize: "14px",
+            opacity: 0.9,
             textDecoration: "none",
             color: "white",
           }}
         >
-          ← セットリストへ戻る
+          ← 公演一覧へ
         </Link>
 
         <div
           style={{
-            marginBottom: "20px",
-            fontSize: "24px",
+            marginBottom: "14px",
+            fontSize: "20px",
             fontWeight: 700,
-            lineHeight: 1.5,
           }}
         >
-          {concert?.bandName ?? "Eagle Jazztech Orchestra"} / {concert?.venue ?? "Shibuya Public Hall"}
+          {concert?.concertName ?? "公演名未設定"} / {concert?.venue}
         </div>
 
+        {/* タブ（統一） */}
         <div
           style={{
             display: "flex",
-            gap: "10px",
-            justifyContent: "flex-start",
-            flexWrap: "wrap",
-            marginBottom: "26px",
+            gap: "8px",
+            overflowX: "auto",
+            marginBottom: "18px",
           }}
         >
           <Link href={`/concerts/${slug}/setlist`} style={chipBtn}>
@@ -70,124 +70,83 @@ export default async function Page({
 
         <h1
           style={{
-            fontSize: "44px",
+            fontSize: "32px",
             fontWeight: 800,
-            marginBottom: "12px",
+            marginBottom: "18px",
           }}
         >
           News
         </h1>
 
-        <div
-          style={{
-            fontSize: "14px",
-            opacity: 0.65,
-            marginBottom: "24px",
-          }}
-        >
-          slug: {slug} / count: {newsList.length}
-        </div>
-
-        <div style={{ display: "grid", gap: "16px" }}>
-          {newsList.length === 0 ? (
+        <div style={{ display: "grid", gap: "14px" }}>
+          {newsList.map((news: any) => (
             <div
+              key={news.id}
               style={{
-                borderRadius: "24px",
-                padding: "24px",
+                borderRadius: "18px",
+                padding: "16px",
                 background: "rgba(255,255,255,0.08)",
                 border: "1px solid rgba(255,255,255,0.14)",
+                boxShadow: "0 16px 36px rgba(0,0,0,0.18)",
               }}
             >
-              お知らせはまだありません。
-            </div>
-          ) : (
-            newsList.map((item: any) => (
-              <article
-                key={item.id}
+              <div
                 style={{
-                  borderRadius: "24px",
-                  padding: "22px",
-                  background: "rgba(255,255,255,0.08)",
-                  border: "1px solid rgba(255,255,255,0.14)",
-                  boxShadow: "0 16px 36px rgba(0,0,0,0.16)",
+                  fontSize: "20px",
+                  fontWeight: 800,
+                  marginBottom: "8px",
                 }}
               >
-                <div
-                  style={{
-                    fontSize: "14px",
-                    opacity: 0.72,
-                    marginBottom: "10px",
-                  }}
-                >
-                  {formatDate(item.publishedAt ?? item.createdAt)}
-                </div>
+                {news.title}
+              </div>
 
-                <h2
-                  style={{
-                    fontSize: "30px",
-                    fontWeight: 800,
-                    lineHeight: 1.2,
-                    margin: 0,
-                    marginBottom: "12px",
-                  }}
-                >
-                  {item.title}
-                </h2>
+              <div
+                style={{
+                  fontSize: "14px",
+                  opacity: 0.8,
+                  marginBottom: "10px",
+                }}
+              >
+                {new Date(news.publishedAt).toLocaleDateString()}
+              </div>
 
-                <div
-                  style={{
-                    fontSize: "18px",
-                    lineHeight: 1.8,
-                    opacity: 0.9,
-                    whiteSpace: "pre-wrap",
-                  }}
-                >
-                  {typeof item.body === "string"
-                    ? item.body
-                    : JSON.stringify(item.body, null, 2)}
-                </div>
-              </article>
-            ))
-          )}
+              <div
+                style={{
+                  fontSize: "15px",
+                  lineHeight: 1.6,
+                  opacity: 0.9,
+                  whiteSpace: "pre-wrap",
+                }}
+              >
+                {news.content}
+              </div>
+            </div>
+          ))}
         </div>
       </div>
     </main>
   );
 }
 
-function formatDate(value?: string) {
-  if (!value) return "";
-  const date = new Date(value);
-  if (Number.isNaN(date.getTime())) return value;
-
-  const y = date.getFullYear();
-  const m = String(date.getMonth() + 1).padStart(2, "0");
-  const d = String(date.getDate()).padStart(2, "0");
-  const hh = String(date.getHours()).padStart(2, "0");
-  const mm = String(date.getMinutes()).padStart(2, "0");
-
-  return `${y}.${m}.${d} ${hh}:${mm}`;
-}
-
 const chipBtn = {
-  padding: "10px 16px",
+  padding: "9px 14px",
   borderRadius: "999px",
   background: "rgba(255,255,255,0.14)",
   border: "1px solid rgba(255,255,255,0.24)",
   textDecoration: "none",
   color: "white",
   fontWeight: 700,
-  display: "inline-block",
+  fontSize: "14px",
+  whiteSpace: "nowrap",
 };
 
 const activeChipBtn = {
-  padding: "10px 16px",
+  padding: "9px 14px",
   borderRadius: "999px",
   background: "rgba(255,255,255,0.30)",
   border: "1px solid rgba(255,255,255,0.34)",
   textDecoration: "none",
   color: "white",
   fontWeight: 700,
-  display: "inline-block",
-  boxShadow: "0 8px 20px rgba(0,0,0,0.18)",
+  fontSize: "14px",
 };
