@@ -1,3 +1,5 @@
+export const dynamic = "force-dynamic";
+
 import Link from "next/link";
 import { fetchConcertList, fetchSiteSettings } from "@/lib/microcs/queries";
 
@@ -17,22 +19,6 @@ export default async function HomePage() {
       }}
     >
       <div style={{ maxWidth: "760px", margin: "0 auto" }}>
-        <div
-          style={{
-            marginBottom: "16px",
-            padding: "12px 14px",
-            borderRadius: "14px",
-            background: "rgba(255,255,255,0.10)",
-            border: "1px solid rgba(255,255,255,0.14)",
-            fontSize: "13px",
-            lineHeight: 1.6,
-            whiteSpace: "pre-wrap",
-            wordBreak: "break-word",
-          }}
-        >
-          {JSON.stringify(siteSettings, null, 2)}
-        </div>
-
         {topImageUrl ? (
           <section
             style={{
