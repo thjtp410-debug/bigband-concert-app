@@ -1,53 +1,36 @@
-import { BottomNav } from "@/components/navigation/bottom-nav";
-import { fetchConcertDetail, fetchConcertMedia } from "@/lib/microcs/queries";
-import { notFound } from "next/navigation";
+import { fetchConcertDetail } from "@/lib/microcs/queries";
 
-type Props = {
-  params: Promise<{ slug: string }>;
-};
-
-export default async function MediaPage({ params }: Props) {
-  const { slug } = await params;
-
-  const concert = await fetchConcertDetail(slug);
-  const media = await fetchConcertMedia(slug);
-
-  if (!concert) return notFound();
+export default async function Page({
+  params,
+}: {
+  params: { slug: string };
+}) {
+  const concert = await fetchConcertDetail(params.slug);
 
   return (
     <main
-      className="min-h-screen text-white"
-      style={{ backgroundColor: concert.theme.background }}
+      style={{
+        minHeight: "100dvh",
+        background: "linear-gradient(180deg, #081a5a 0%, #0d2cff 100%)",
+        color: "white",
+        padding: "20px",
+      }}
     >
-      <div className="mx-auto max-w-md px-5 pt-8 pb-28">
-        <h1 className="text-2xl font-bold mb-6">Media</h1>
+      <div style={{ maxWidth: "560px", margin: "0 auto" }}>
+        <h1 style={{ fontSize: "28px", fontWeight: "800", marginBottom: "20px" }}>
+          Media
+        </h1>
 
-        <div className="space-y-4">
-          {media.map((m) => (
-            <div
-              key={m.id}
-              className="rounded-xl bg-white/5 border border-white/10 p-3"
-            >
-              <p className="font-semibold">{m.title}</p>
-
-              {m.type === "video" && m.embedUrl && (
-                <div className="mt-2 aspect-video">
-                  <iframe
-                    src={m.embedUrl}
-                    className="w-full h-full rounded"
-                  />
-                </div>
-              )}
-
-              {m.caption && (
-                <p className="text-sm text-white/70 mt-2">{m.caption}</p>
-              )}
-            </div>
-          ))}
+        <div
+          style={{
+            padding: "20px",
+            borderRadius: "16px",
+            background: "rgba(255,255,255,0.08)",
+          }}
+        >
+          メディアは準備中です
         </div>
       </div>
-
-      <BottomNav slug={slug} />
     </main>
   );
 }
