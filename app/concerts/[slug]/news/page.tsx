@@ -1,5 +1,6 @@
+import TopBackLink from "@/components/navigation/top-back-link";
+import { fetchConcertDetail, fetchConcertMembers } from "@/lib/microcs/queries";
 import Link from "next/link";
-import { fetchConcertDetail, fetchConcertNews } from "@/lib/microcs/queries";
 
 export default async function Page({
   params,
@@ -9,7 +10,27 @@ export default async function Page({
   const { slug } = await params;
 
   const concert = await fetchConcertDetail(slug);
-  const newsList = await fetchConcertNews(slug);
+  const members = await fetchConcertMembers(slug);
+
+  const bandMistress = members.find((m: any) => m.role === "Band Mistress");
+  const bandMaster = members.find((m: any) => m.role === "Band Master");
+
+  const normalMembers = members.filter(
+    (m: any) => m.role !== "Band Mistress" && m.role !== "Band Master"
+  );
+
+  const instrumentOrder = ["Sax", "Tb", "Tp", "Rhythm"];
+
+  const grouped = normalMembers.reduce((acc: any, m: any) => {
+    const key = m.instrument || "Other";
+    if (!acc[key]) acc[key] = [];
+    acc[key].push(m);
+    return acc;
+  }, {});
+
+  const orderedGroups = instrumentOrder
+    .filter((key) => grouped[key]?.length)
+    .map((key) => [key, grouped[key]] as const);
 
   return (
     <main
@@ -21,45 +42,37 @@ export default async function Page({
       }}
     >
       <div style={{ maxWidth: "560px", margin: "0 auto" }}>
-        <Link
-          href="/"
-          style={{
-            display: "inline-block",
-            marginBottom: "16px",
-            fontSize: "14px",
-            opacity: 0.9,
-            textDecoration: "none",
-            color: "white",
-          }}
-        >
-          ← 公演一覧へ
-        </Link>
+        <TopBackLink />
 
         <div
           style={{
             marginBottom: "14px",
             fontSize: "20px",
             fontWeight: 700,
+            lineHeight: 1.4,
           }}
         >
-          {concert?.concertName ?? "公演名未設定"} / {concert?.venue}
+          {concert?.concertName ?? "公演名未設定"} / {concert?.venue ?? "Shibuya Public Hall"}
         </div>
 
         <div
           style={{
             display: "flex",
             gap: "8px",
-            overflowX: "auto",
+            justifyContent: "flex-start",
+            flexWrap: "nowrap",
             marginBottom: "18px",
+            overflowX: "auto",
+            paddingBottom: "2px",
           }}
         >
           <Link href={`/concerts/${slug}/setlist`} style={chipBtn}>
             Setlist
           </Link>
-          <Link href={`/concerts/${slug}/members`} style={chipBtn}>
+          <Link href={`/concerts/${slug}/members`} style={activeChipBtn}>
             Members
           </Link>
-          <Link href={`/concerts/${slug}/news`} style={activeChipBtn}>
+          <Link href={`/concerts/${slug}/news`} style={chipBtn}>
             News
           </Link>
           <Link href={`/concerts/${slug}/media`} style={chipBtn}>
@@ -72,88 +85,155 @@ export default async function Page({
             fontSize: "32px",
             fontWeight: 800,
             marginBottom: "18px",
+            lineHeight: 1.1,
           }}
         >
-          News
+          Members
         </h1>
 
-        <div style={{ display: "grid", gap: "14px" }}>
-          {newsList.length === 0 ? (
+        {(bandMistress || bandMaster) && (
+          <section style={{ marginBottom: "28px" }}>
             <div
               style={{
-                borderRadius: "18px",
-                padding: "16px",
-                background: "rgba(255,255,255,0.08)",
-                border: "1px solid rgba(255,255,255,0.14)",
-                boxShadow: "0 16px 36px rgba(0,0,0,0.18)",
+                fontSize: "22px",
+                fontWeight: 800,
+                marginBottom: "14px",
+                opacity: 0.95,
               }}
             >
-              お知らせはまだありません。
+              Leaders
             </div>
-          ) : (
-            newsList.map((news: any) => (
-              <div
-                key={news.id}
-                style={{
-                  borderRadius: "18px",
-                  padding: "16px",
-                  background: "rgba(255,255,255,0.08)",
-                  border: "1px solid rgba(255,255,255,0.14)",
-                  boxShadow: "0 16px 36px rgba(0,0,0,0.18)",
-                }}
-              >
-                <div
-                  style={{
-                    fontSize: "20px",
-                    fontWeight: 800,
-                    marginBottom: "8px",
-                    lineHeight: 1.3,
-                  }}
-                >
-                  {news.title}
-                </div>
 
-                <div
-                  style={{
-                    fontSize: "14px",
-                    opacity: 0.8,
-                    marginBottom: "10px",
-                  }}
-                >
-                  {formatDate(news.publishedAt ?? news.createdAt)}
-                </div>
+            <div style={gridStyle}>
+              {bandMistress && <MemberCard member={bandMistress} />}
+              {bandMaster && <MemberCard member={bandMaster} />}
+            </div>
+          </section>
+        )}
 
-                <div
-                  style={{
-                    fontSize: "15px",
-                    lineHeight: 1.7,
-                    opacity: 0.92,
-                    whiteSpace: "pre-wrap",
-                    wordBreak: "break-word",
-                  }}
-                >
-                  {typeof news.body === "string" ? news.body : ""}
-                </div>
-              </div>
-            ))
-          )}
-        </div>
+        {orderedGroups.map(([instrument, list]: any) => (
+          <section key={instrument} style={{ marginBottom: "28px" }}>
+            <div
+              style={{
+                fontSize: "22px",
+                fontWeight: 800,
+                marginBottom: "14px",
+                opacity: 0.95,
+              }}
+            >
+              {instrument}
+            </div>
+
+            <div style={gridStyle}>
+              {list.map((m: any) => (
+                <MemberCard key={m.id} member={m} />
+              ))}
+            </div>
+          </section>
+        ))}
       </div>
     </main>
   );
 }
 
-function formatDate(value?: string) {
-  if (!value) return "";
-  const date = new Date(value);
-  if (Number.isNaN(date.getTime())) return value;
+function MemberCard({ member }: { member: any }) {
+  return (
+    <div
+      style={{
+        width: "100%",
+        borderRadius: "18px",
+        overflow: "hidden",
+        background: "rgba(255,255,255,0.08)",
+        border: "1px solid rgba(255,255,255,0.14)",
+        boxShadow: "0 16px 36px rgba(0,0,0,0.18)",
+        backdropFilter: "blur(8px)",
+      }}
+    >
+      <div
+        style={{
+          width: "100%",
+          aspectRatio: "1 / 1",
+          background: "rgba(255,255,255,0.06)",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          overflow: "hidden",
+        }}
+      >
+        {member.image?.url ? (
+          <img
+            src={member.image.url}
+            alt={member.name}
+            style={{
+              width: "100%",
+              height: "100%",
+              objectFit: "cover",
+              display: "block",
+            }}
+          />
+        ) : (
+          <span
+            style={{
+              fontSize: "14px",
+              opacity: 0.65,
+            }}
+          >
+            No Image
+          </span>
+        )}
+      </div>
 
-  const y = date.getFullYear();
-  const m = String(date.getMonth() + 1).padStart(2, "0");
-  const d = String(date.getDate()).padStart(2, "0");
+      <div
+        style={{
+          padding: "12px 12px 14px",
+          minHeight: "86px",
+        }}
+      >
+        <div
+          style={{
+            fontSize: "16px",
+            fontWeight: 800,
+            lineHeight: 1.25,
+            marginBottom: "4px",
+            wordBreak: "break-word",
+          }}
+        >
+          {member.name}
+        </div>
 
-  return `${y}.${m}.${d}`;
+        <div
+          style={{
+            fontSize: "13px",
+            opacity: 0.78,
+            lineHeight: 1.3,
+          }}
+        >
+          {member.instrument}
+        </div>
+
+        {member.role && (
+          <div
+            style={{
+              marginTop: "5px",
+              fontSize: "12px",
+              fontWeight: 700,
+              color: "#a5d8ff",
+              lineHeight: 1.3,
+            }}
+          >
+            {member.role}
+          </div>
+        )}
+      </div>
+    </div>
+  );
 }
+
+const gridStyle = {
+  display: "grid",
+  gridTemplateColumns: "repeat(2, minmax(0, 1fr))",
+  gap: "12px",
+};
 
 const chipBtn = {
   padding: "9px 14px",
@@ -163,8 +243,10 @@ const chipBtn = {
   textDecoration: "none",
   color: "white",
   fontWeight: 700,
+  display: "inline-block",
   fontSize: "14px",
   whiteSpace: "nowrap" as const,
+  flex: "0 0 auto",
 };
 
 const activeChipBtn = {
@@ -175,6 +257,9 @@ const activeChipBtn = {
   textDecoration: "none",
   color: "white",
   fontWeight: 700,
+  display: "inline-block",
   fontSize: "14px",
+  boxShadow: "0 8px 20px rgba(0,0,0,0.18)",
   whiteSpace: "nowrap" as const,
+  flex: "0 0 auto",
 };

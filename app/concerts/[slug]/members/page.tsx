@@ -1,5 +1,6 @@
-import Link from "next/link";
+import TopBackLink from "@/components/navigation/top-back-link";
 import { fetchConcertDetail, fetchConcertMembers } from "@/lib/microcs/queries";
+import Link from "next/link";
 
 export default async function Page({
   params,
@@ -41,19 +42,7 @@ export default async function Page({
       }}
     >
       <div style={{ maxWidth: "560px", margin: "0 auto" }}>
-        <Link
-          href="/"
-          style={{
-            display: "inline-block",
-            marginBottom: "16px",
-            fontSize: "14px",
-            opacity: 0.9,
-            textDecoration: "none",
-            color: "white",
-          }}
-        >
-          ← 公演一覧へ
-        </Link>
+        <TopBackLink />
 
         <div
           style={{

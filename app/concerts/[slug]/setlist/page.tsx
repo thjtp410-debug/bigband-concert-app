@@ -1,6 +1,7 @@
-import Link from "next/link";
 import AutoRefresh from "@/components/auto-refresh";
+import TopBackLink from "@/components/navigation/top-back-link";
 import { fetchConcertDetail, fetchConcertSetlist } from "@/lib/microcs/queries";
+import Link from "next/link";
 
 export default async function Page({
   params,
@@ -44,19 +45,7 @@ export default async function Page({
       <AutoRefresh intervalMs={3000} />
 
       <div style={{ maxWidth: "560px", margin: "0 auto" }}>
-        <Link
-          href="/"
-          style={{
-            display: "inline-block",
-            marginBottom: "16px",
-            fontSize: "14px",
-            opacity: 0.9,
-            textDecoration: "none",
-            color: "white",
-          }}
-        >
-          ← 公演一覧へ
-        </Link>
+        <TopBackLink />
 
         {concert?.flyerImage?.url ? (
           <section
