@@ -11,7 +11,7 @@ export default function TopBackLink({
     <div
       style={{
         display: "flex",
-        justifyContent: "flex-end",
+        justifyContent: "flex-start", // ←ここ変えた
         marginBottom: "16px",
       }}
     >
