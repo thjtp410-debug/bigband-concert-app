@@ -2,6 +2,7 @@ export const dynamic = "force-dynamic";
 
 import Link from "next/link";
 import OpeningOverlay from "@/components/opening-overlay";
+import HomeTopBar from "@/components/home-top-bar";
 import { fetchConcertList, fetchSiteSettings } from "@/lib/microcs/queries";
 
 export default async function HomePage() {
@@ -22,6 +23,8 @@ export default async function HomePage() {
       <OpeningOverlay />
 
       <div style={{ maxWidth: "760px", margin: "0 auto" }}>
+        <HomeTopBar />
+
         {topImageUrl ? (
           <section
             style={{
