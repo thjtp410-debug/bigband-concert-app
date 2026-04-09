@@ -1,15 +1,45 @@
+"use client";
+
 export const dynamic = "force-dynamic";
 
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import OpeningOverlay from "@/components/opening-overlay";
-import HomeTopBar from "@/components/home-top-bar";
+import OfficialMenuOverlay from "@/components/official-menu-overlay";
 import { fetchConcertList, fetchSiteSettings } from "@/lib/microcs/queries";
 
-export default async function HomePage() {
-  const concerts = await fetchConcertList();
-  const siteSettings = await fetchSiteSettings();
+export default function HomePage() {
+  const [concerts, setConcerts] = useState<any[]>([]);
+  const [topImageUrl, setTopImageUrl] = useState<string | null>(null);
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [showOpening, setShowOpening] = useState(false);
 
-  const topImageUrl = siteSettings?.topImage?.url ?? null;
+  useEffect(() => {
+    const openedOnce = sessionStorage.getItem("opening-shown");
+    if (!openedOnce) {
+      setShowOpening(true);
+      sessionStorage.setItem("opening-shown", "true");
+    }
+
+    async function load() {
+      const concertData = await fetchConcertList();
+      const settings = await fetchSiteSettings();
+      setConcerts(concertData);
+      setTopImageUrl(settings?.topImage?.url ?? null);
+    }
+
+    load();
+  }, []);
+
+  const activeConcerts = concerts.filter((concert) => {
+    const status = concert.setlistStatus?.concertStatus ?? "before";
+    return status !== "ended";
+  });
+
+  const pastConcerts = concerts.filter((concert) => {
+    const status = concert.setlistStatus?.concertStatus ?? "before";
+    return status === "ended";
+  });
 
   return (
     <main
@@ -20,11 +50,60 @@ export default async function HomePage() {
         padding: "20px 14px 120px",
       }}
     >
-      <OpeningOverlay />
+      {showOpening ? <OpeningOverlay /> : null}
+
+      <OfficialMenuOverlay
+        open={menuOpen}
+        onClose={() => setMenuOpen(false)}
+        pastConcerts={pastConcerts}
+      />
 
       <div style={{ maxWidth: "760px", margin: "0 auto" }}>
-        <HomeTopBar />
+        {/* 上部 */}
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "flex-start",
+            gap: "14px",
+            marginBottom: "18px",
+          }}
+        >
+          <div
+            style={{
+              fontSize: "clamp(26px, 5vw, 48px)",
+              fontWeight: 900,
+              lineHeight: 1.04,
+              letterSpacing: "-0.05em",
+              whiteSpace: "nowrap",
+            }}
+          >
+            Eagle Jazztech Orchestra
+          </div>
 
+          <button
+            onClick={() => setMenuOpen(true)}
+            style={{
+              flex: "0 0 auto",
+              width: "56px",
+              height: "56px",
+              borderRadius: "999px",
+              border: "1px solid rgba(255,255,255,0.18)",
+              background: "rgba(255,255,255,0.12)",
+              color: "white",
+              fontSize: "26px",
+              fontWeight: 700,
+              boxShadow: "0 10px 24px rgba(0,0,0,0.18)",
+              backdropFilter: "blur(10px)",
+              WebkitBackdropFilter: "blur(10px)",
+              cursor: "pointer",
+            }}
+          >
+            ≡
+          </button>
+        </div>
+
+        {/* トップ画像 */}
         {topImageUrl ? (
           <section
             style={{
@@ -48,6 +127,7 @@ export default async function HomePage() {
           </section>
         ) : null}
 
+        {/* タイトル */}
         <div
           style={{
             fontSize: "34px",
@@ -56,11 +136,12 @@ export default async function HomePage() {
             lineHeight: 1.1,
           }}
         >
-          公演一覧
+          予約公演
         </div>
 
+        {/* 公演一覧 */}
         <div style={{ display: "grid", gap: "18px" }}>
-          {concerts.map((concert: any) => {
+          {activeConcerts.map((concert: any) => {
             const status = concert.setlistStatus?.concertStatus ?? "before";
             const showReservationButton =
               status === "before" && !!concert.reservationUrl;

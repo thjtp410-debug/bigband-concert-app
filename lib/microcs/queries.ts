@@ -1,17 +1,14 @@
-import { client } from "@/lib/microcms/client";
+git add .
+git commit -m "add official top menu overlay"
+git pushimport { client } from "@/lib/microcms/client";
 
 export async function fetchSiteSettings() {
   const data = await client.get({
     endpoint: "site-settings",
-    queries: {
-      limit: 1,
-    },
   });
 
-  const item = data.contents?.[0];
-
   return {
-    topImage: item?.image ?? null,
+    topImage: data.topImage ?? null,
   };
 }
 
@@ -27,7 +24,7 @@ export async function fetchConcertList() {
     id: item.id,
     slug: item.slug,
     title: item.title,
-    concertName: item.concertName ?? item.title ?? "公演名未設定",
+    concertName: item.concertName ?? item.title ?? "Concert",
     bandName: item.bandName ?? "Eagle Jazztech Orchestra",
     venue: item.venue ?? "Shibuya Public Hall",
     date: item.date ?? "2026.04.12",
@@ -68,7 +65,7 @@ export async function fetchConcertDetail(slug: string) {
     id: item.id,
     slug: item.slug,
     title: item.title,
-    concertName: item.concertName ?? item.title ?? "公演名未設定",
+    concertName: item.concertName ?? item.title ?? "Concert",
     bandName: item.bandName ?? "Eagle Jazztech Orchestra",
     venue: item.venue ?? "Shibuya Public Hall",
     date: item.date ?? "2026.04.12",
