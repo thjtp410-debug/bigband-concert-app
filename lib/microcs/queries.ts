@@ -1,6 +1,4 @@
-git add .
-git commit -m "add official top menu overlay"
-git pushimport { client } from "@/lib/microcms/client";
+import { client } from "@/lib/microcms/client";
 
 export async function fetchSiteSettings() {
   const data = await client.get({
